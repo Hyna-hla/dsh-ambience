@@ -1,0 +1,12 @@
+{
+  "name": "dsh-ambience",
+  "description": "氛围插件：淡化背景图 + 背景音乐 + 10 段均衡器，右下角悬浮条 + 设置页双入口",
+  "version": "1.1.0",
+  "entry": {
+    "name": "dsh-ambience",
+    "inject": []
+  },
+  "client": {
+    "platform": "web"
+  }
+}
