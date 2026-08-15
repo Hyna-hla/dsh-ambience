@@ -293,13 +293,20 @@ window.__ModuleLoader__.load({
       if (!enable || !ambCtx || !ambCtx.theme || typeof ambCtx.theme.overrideTokens !== "function") return;
       var map = buildTokenOverrides();
       if (!Object.keys(map).length) return;
-      try { tokenDisposer = ambCtx.theme.overrideTokens("dsh-ambience", map); } catch (e) { tokenDisposer = null; }
+      try {
+        tokenDisposer = ambCtx.theme.overrideTokens("dsh-ambience", map);
+        console.info("[dsh-ambience] 表面半透明已应用 (" + Object.keys(map).length + " tokens)");
+      } catch (e) {
+        tokenDisposer = null;
+        console.error("[dsh-ambience] 表面半透明应用失败", e);
+      }
     }
     function renderBg() {
       var s = runtime.settings;
       if (!s) return;
       ensureBgLayers();
       var on = !!(s.bg && s.bg.on && s.bg.image);
+      console.info("[dsh-ambience] renderBg: on=" + on + " opacity=" + (s.bg && s.bg.opacity) + " blur=" + (s.bg && s.bg.blur));
       if (bodyStyleEl) bodyStyleEl.textContent = on ? "html,body{background:transparent !important}" : "";
       if (on) {
         var target = activeBg === bgA ? bgB : bgA;
@@ -654,9 +661,11 @@ window.__ModuleLoader__.load({
         var reader = new FileReader();
         reader.onload = function () {
           var dataUrl = String(reader.result);
+          console.info("[dsh-ambience] 导入图片: " + file.name + " " + Math.round(dataUrl.length / 1024) + "KB");
+          // 与原版一致：图片无论大小都先显示；saveSettings 只把 ≤2.5MB 的写入持久化。
           var next = function (prev) {
             var copy = JSON.parse(JSON.stringify(prev));
-            if (dataUrl.length <= IMG_PERSIST_MAX) copy.bg.image = dataUrl;
+            copy.bg.image = dataUrl;
             copy.bg.on = true;
             return copy;
           };
